@@ -83,4 +83,4 @@ The web app will run at http://localhost:8081
 
 ## Computerization
 
-Developed by the **Computerization** club, with the assistance of deep neural networks (to learn more, see [AI Lab](https://github.com/WFLA-AI-Lab)). We are dedicated to helping the community through technology.
+Developed by the **Computerization** club, **with the assistance of deep neural networks** (to learn more, see [AI Lab](https://github.com/WFLA-AI-Lab)). We are dedicated to helping the community through technology.
