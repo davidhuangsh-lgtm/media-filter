@@ -10,10 +10,12 @@ media_filter/
 │   ├── main.py       # API Service
 │   ├── requirements.txt
 │   └── .env.example
-└── mobile/           # Expo React Native Mobile App
+├── ios/              # Primary iOS App (Kotlin Multiplatform + SwiftUI)
+│   ├── composeApp/   # Shared Kotlin logic
+│   └── iosApp/       # SwiftUI app + Share Extension
+└── web/              # Web App (Expo)
     ├── app/          # Application Pages (Router)
-    ├── lib/          # Utilities & API client
-    └── package.json
+    └── lib/          # Utilities & API client
 ```
 
 ## Quick Start
@@ -41,21 +43,26 @@ python main.py
 
 The backend will run at http://localhost:8000
 
-### 2. Start Mobile App
+### 2. Run iOS App
 
 ```bash
-cd mobile
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
+cd ios
+./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
 ```
 
-Scan the QR code with the **Expo Go** app to preview.
+Then open `ios/iosApp/iosApp.xcodeproj` in Xcode and run.
 
-**Note**: If testing on a physical device, update `API_BASE_URL` in `mobile/lib/api.ts` to your computer's local IP address.
+**Note**: For physical device testing, update `baseUrl` in `ios/composeApp/src/commonMain/kotlin/.../network/MediaFilterApi.kt` to your Mac's LAN IP.
+
+### 3. Run Web App
+
+```bash
+cd web
+npm install
+npm run web
+```
+
+The web app will run at http://localhost:8081
 
 ## Features
 
@@ -63,13 +70,16 @@ Scan the QR code with the **Expo Go** app to preview.
 - [x] Direct text input analysis
 - [x] Credibility assessment (Reliable / Caution / Misleading)
 - [x] Detailed analysis explanations
+- [x] iOS Share Extension (share directly from Safari/WeChat)
+- [x] Dark/Light theme support
 - [ ] Douyin video analysis (Planned)
 - [ ] WeChat Video Channel analysis (Planned)
 
 ## Tech Stack
 
 - **Backend**: Python, FastAPI, BeautifulSoup, DeepSeek API
-- **Mobile**: React Native, Expo, TypeScript
+- **iOS**: Kotlin Multiplatform, SwiftUI, Ktor
+- **Web**: React Native (Expo), TypeScript
 
 ## Computerization
 

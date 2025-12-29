@@ -5,8 +5,8 @@ This guide explains how to set up the mobile application with native share capab
 ## Step 1: Initialize Project (Reference only)
 
 ```bash
-npx create-expo-app@latest mobile --template blank-typescript
-cd mobile
+npx create-expo-app@latest web --template blank-typescript
+cd web
 ```
 
 ## Step 2: Install Dependencies

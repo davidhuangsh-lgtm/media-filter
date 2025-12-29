@@ -23,11 +23,10 @@ venv/
 .idea/
 
 # Ignore native build folders
-/mobile/android/app/build
-/mobile/ios/build
-/mobile-kmp/composeApp/build
-/mobile-kmp/iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata
-/mobile-kmp/iosApp/iosApp.xcodeproj/xcuserdata
+/web/android/app/build
+/web/ios/build
+/ios/iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata
+/ios/iosApp/iosApp.xcodeproj/xcuserdata
 
 # Ignore Expo artifacts
 .expo/
@@ -38,4 +37,13 @@ venv/
 
 # Ignore KMP specific
 local.properties
-mobile-kmp/
+ios/.gradle/
+ios/composeApp/build/
+ios/build/
+
+# Ignore iOS native app (in development)
+ios/
+
+# Ignore AI assistant files
+CLAUDE.md
+GEMINI.md
