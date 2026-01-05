@@ -237,6 +237,85 @@ def analyze_with_llm(title: str, content: str, author: str) -> dict:
         "score": score,
     }
 
+@app.get("/")
+async def root():
+    return {"message": "Media Filter API - 帮助老年人识别网络虚假信息"}
+
+
+@app.post("/analyze", response_model=AnalyzeResponse)
+async def analyze_content(request: AnalyzeRequest):
+    """Analyze content with auto-detection of URL or text input."""
+
+    # Handle both new unified 'content' field and legacy 'url'/'text' fields
+    input_content = request.content if hasattr(request, 'content') and request.content else None
+    
+    # Backward compatibility
+    if not input_content:
+        if request.url:
+            input_content = request.url
+        elif request.text:
+            input_content = request.text
+    
+    if not input_content:
+        raise HTTPException(status_code=400, detail="请提供文章链接或文字内容")
+    
+    # Validate input length
+    if len(input_content) > 50000:
+        raise HTTPException(status_code=400, detail="内容过长，请限制在50000字符以内")
+    
+    if len(input_content.strip()) < 10:
+        raise HTTPException(status_code=400, detail="内容过短，请提供至少10个字符")
+    
+    # Auto-detect input type
+    input_type, normalized_input = detect_input_type(input_content)
+    
+    title = "用户输入内容"
+    content = ""
+    author = "未知"
+    
+    if input_type == "url":
+        # Check if it's a WeChat article URL
+        if "mp.weixin.qq.com" in normalized_input or "weixin.qq.com" in normalized_input:
+            try:
+                article = await extract_wechat_article(normalized_input)
+                title = article["title"]
+                content = article["content"]
+                author = article["author"]
+            except Exception as e:
+                # Fallback: if URL extraction fails, treat as text
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"无法提取文章内容：{str(e)}。请尝试复制文章内容直接粘贴分析。"
+                )
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="目前仅支持微信公众号文章链接。其他链接请复制文章内容后直接粘贴分析。"
+            )
+    else:
+        # Direct text input
+        content = normalized_input
+        # Sanitize content
+        content = re.sub(r'\s+', ' ', content)  # Normalize whitespace
+        content = content.strip()
+    
+    # Validate content is not empty
+    if not content or len(content) < 10:
+        raise HTTPException(status_code=400, detail="文章内容不能为空或过短")
+    
+    # Analyze with LLM
+    analysis = analyze_with_llm(title, content, author)
+    
+    return AnalyzeResponse(
+        title=title,
+        verdict=analysis["verdict"],
+        verdict_emoji=analysis["verdict_emoji"],
+        summary=analysis["summary"],
+        details=analysis["details"],
+        original_text=content[:500] + "..." if len(content) > 500 else content,
+        score=analysis.get("score"),
+        input_type=input_type,
+    )
 
 
 @app.get("/health")
